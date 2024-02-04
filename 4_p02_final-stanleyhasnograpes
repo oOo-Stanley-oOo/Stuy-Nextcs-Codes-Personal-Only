@@ -1,0 +1,384 @@
+//Goal: To recreate a game similar to Geometry Dash
+
+//Driver File
+Background background;
+Circle player;
+ArrayList<LevelElement> elements;
+ArrayList<Resetter> resetters;
+
+void setup() {
+  size(1200, 500);
+
+  // Player Circle
+  player = new Circle(width / 2, height / 2, 20, 10);
+
+  // Background
+  background = new Background();
+
+  elements = new ArrayList<LevelElement>();
+  resetters = new ArrayList<Resetter>();
+
+  // Block Generator
+  // elements.add(new LevelElement(x-position, height - (height of block), length of block, height of block from top of block));
+  elements.add(new LevelElement(1800, height - 50, 250, 50));
+  elements.add(new LevelElement(2000, height - 100, 50, 100));
+  elements.add(new LevelElement(2400, height-50, 50, 50));
+  elements.add(new LevelElement(2600, height-100, 50, 100));
+  elements.add(new LevelElement(2800, height-150, 50, 150));
+  elements.add(new LevelElement(2950, height-200, 50, 200));
+  elements.add(new LevelElement(4400, height-50, 50, 50));
+  elements.add(new LevelElement(4600, height-100, 50, 50));
+  elements.add(new LevelElement(4800, height-150, 50, 50));
+  elements.add(new LevelElement(5000, height-200, 50, 50));
+  elements.add(new LevelElement(6000, height-100, 50, 100));
+  elements.add(new LevelElement(6100, height-200, 50, 200));
+  elements.add(new LevelElement(6225, height-300, 50, 300));
+  //WIN
+  elements.add(new LevelElement(10000, height-300, 50, 300));
+  elements.add(new LevelElement(10000, height-50, 250, 50));
+  elements.add(new LevelElement(10100, height-100, 50, 100));
+  elements.add(new LevelElement(10200, height-300, 50, 300));
+  elements.add(new LevelElement(10300, height-300, 50, 300));
+  elements.add(new LevelElement(10400, height-300, 50, 300));
+  elements.add(new LevelElement(10400, height-300, 300, 50));
+  elements.add(new LevelElement(10700, height-300, 50, 300));
+
+
+
+  // Resetter Circle Generator
+  // resetters.add(new Resetter(x-position, height - (y position), size of resetter));
+  resetters.add(new Resetter(1245, height, 50));
+  resetters.add(new Resetter(1995, height - 75, 5));
+  resetters.add(new Resetter(1795, height - 25, 5));
+  resetters.add(new Resetter(2545, height, 50));
+  resetters.add(new Resetter(2595, height, 50));
+  resetters.add(new Resetter(2645, height, 50));
+  resetters.add(new Resetter(2695, height, 50));
+  resetters.add(new Resetter(2745, height, 50));
+  resetters.add(new Resetter(2795, height, 50));
+  resetters.add(new Resetter(2845, height, 50));
+  resetters.add(new Resetter(2895, height, 50));
+  resetters.add(new Resetter(2945, height, 50));
+  resetters.add(new Resetter(2995, height, 50));
+  resetters.add(new Resetter(3045, height, 50));
+  resetters.add(new Resetter(3095, height, 50));
+  resetters.add(new Resetter(3145, height, 50));
+  resetters.add(new Resetter(3195, height, 50));
+  resetters.add(new Resetter(3600, height, 50));
+  resetters.add(new Resetter(3650, height, 50));
+  resetters.add(new Resetter(4000, height, 50));
+  resetters.add(new Resetter(4050, height, 50));
+  resetters.add(new Resetter(4100, height, 50));
+  resetters.add(new Resetter(4645, height-25, 5));
+  resetters.add(new Resetter(4845, height-70, 5));
+  resetters.add(new Resetter(5045, height-125, 5));
+  resetters.add(new Resetter(4700, height, 50));
+  resetters.add(new Resetter(4750, height, 50));
+  resetters.add(new Resetter(4800, height, 50));
+  resetters.add(new Resetter(4850, height, 50));
+  resetters.add(new Resetter(4900, height, 50));
+  resetters.add(new Resetter(4950, height, 50));
+  resetters.add(new Resetter(5000, height, 50));
+  resetters.add(new Resetter(5050, height, 50));
+  resetters.add(new Resetter(5100, height, 50));
+  resetters.add(new Resetter(5150, height, 50));
+  resetters.add(new Resetter(5200, height, 50));
+  resetters.add(new Resetter(5250, height, 50));
+  resetters.add(new Resetter(5300, height, 50));
+  resetters.add(new Resetter(5350, height, 50));
+  resetters.add(new Resetter(5700, height, 50));
+  resetters.add(new Resetter(5700, height-50, 50));
+  resetters.add(new Resetter(6000, height, 50));
+  resetters.add(new Resetter(6000, height-50, 50));
+  resetters.add(new Resetter(6050, height-25, 50));
+  resetters.add(new Resetter(6400, height, 50));
+  resetters.add(new Resetter(6450, height, 50));
+  resetters.add(new Resetter(6500, height, 50));
+  resetters.add(new Resetter(6550, height, 50));
+  resetters.add(new Resetter(6600, height, 50));
+  resetters.add(new Resetter(6650, height, 50));
+  resetters.add(new Resetter(7200, height, 50));
+  resetters.add(new Resetter(7250, height, 50));
+  resetters.add(new Resetter(7300, height, 50));
+  resetters.add(new Resetter(7600, height, 50));
+  resetters.add(new Resetter(7650, height, 50));
+  resetters.add(new Resetter(7700, height, 50));
+  resetters.add(new Resetter(8000, height, 50));
+  resetters.add(new Resetter(8050, height, 50));
+  resetters.add(new Resetter(8100, height, 50)); 
+  resetters.add(new Resetter(8500, height, 10));
+  resetters.add(new Resetter(13500, height/2, 1000));
+
+
+}//setup
+
+void draw() {
+  background(255);
+
+  player.update();
+  player.display();
+
+  background.update();
+
+  // Player Collision
+  boolean collided = false;
+  boolean rollOnTop = false;
+  LevelElement collisionElement = null;
+  for (LevelElement element : elements) {
+    element.update();
+    element.display();
+    
+    if (element.intersects(player)) {
+      collided = true;
+
+      // Player on LevelElement
+      if (player.y + player.radius >= element.y && player.x + player.radius >= element.x && player.x - player.radius <= element.x + element.width) {
+        rollOnTop = true;
+        collisionElement = element;
+      }
+
+      break;
+    }
+  }
+
+  if (collided && collisionElement != null) {
+    if (rollOnTop) {
+    // Roll on top of the element
+    player.y = collisionElement.y - player.radius;
+
+    // Allow the player to jump when on top of the element
+    player.canJump = true;
+  } 
+}
+
+  // Resetter Collision
+  for (Resetter resetter : resetters) {
+    resetter.update();
+    resetter.display();
+
+    if (resetter.intersects(player)) {
+      resetter.resetPosition();
+    }
+  }
+}//draw
+
+void resetGame() {
+  // Reset the position of all blocks
+  for (LevelElement block : elements) {
+    block.reset();
+  }
+
+  // Reset the player's position
+  player.reset();
+
+  // Refresh Background
+  background.clearSquares();
+
+  // Reset all resetters
+  for (Resetter resetter : resetters) {
+    resetter.resetPosition();
+  }
+}
+
+void keyPressed() {
+  if (keyCode == ' ' && player.canJump) {
+    player.jump();
+    player.canJump = false;
+  }
+}
+
+class Background {
+  ArrayList<PVector> squares;
+  int interval = 200; // Interval between creating squares (in milliseconds)
+  int previousTime = 0; // Time at which the last square was created
+  float squareWidth = 10; // Width of the squares
+
+  Background() {
+    squares = new ArrayList<PVector>();
+  }
+
+  void update() {
+    int currentTime = millis();
+
+    if (currentTime - previousTime >= interval) {
+      float y = random(height - 10);
+
+      // Create a new square with width+100 and y-coordinate
+      PVector square = new PVector(width, y);
+
+      // Add the square to the list
+      squares.add(square);
+
+      // Update the previousTime
+      previousTime = currentTime;
+    }
+
+    // Update and display each square
+    for (int i = squares.size() - 1; i >= 0; i--) {
+      PVector square = squares.get(i);
+
+      // Speed of background squares
+      float speed = 50 * (currentTime - previousTime) / 1000.0; // Divide by 1000 to convert milliseconds to seconds
+      square.x -= speed;
+
+      // Remove the square if it goes off the screen
+      if (square.x + squareWidth < 0) {
+        squares.remove(i);
+      } else {
+        displaySquare(square.x, square.y);
+      }
+    }
+  }
+
+  void displaySquare(float x, float y) {
+    noStroke();
+    fill(random(0, 255), random(0, 255), random(0, 255));
+    rect(x, y, squareWidth, squareWidth);
+  }
+
+  void clearSquares() {
+    squares.clear();
+  }
+}
+class Circle {
+  float x, y; // position
+  float radius; // size
+  float velocityY; // vertical velocity
+  float angle; // angle for spinning circle
+  float spinningRadius; // radius of the spinning circle
+  boolean canJump; // whether the circle can jump or not
+
+  Circle(float x, float y, float radius, float spinningRadius) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.velocityY = 0;
+    this.angle = 0;
+    this.spinningRadius = spinningRadius;
+    this.canJump = false;
+  }
+
+  void update() {
+    y += velocityY;
+
+    // Gravity
+    velocityY += 0.5;
+
+    // Limit the maximum velocity
+    if (velocityY > 10) {
+      velocityY = 10;
+    }
+
+    if (y > height - radius) {
+      y = height - radius;
+      velocityY = 0;
+      canJump = true;
+    }
+
+    // Update angle for spinning circle
+    angle += 0.2;
+  }
+
+  void jump() {
+    // Circle can only jump when it is allowed to jump
+    if (canJump) {
+      // Apply an upward force to make the circle jump
+      velocityY = -10;
+      canJump = false;
+    }
+  }
+
+  void reset() {
+    // Reset the circle to its initial position
+    x = width / 2;
+    y = height - 20;
+    velocityY = 0;
+    canJump = false;
+  }
+
+  void display() {
+    // Player circle
+    fill(0);
+    ellipse(x, y, radius * 2, radius * 2);
+
+    // Spinning circle
+    fill(255);
+    float spinningX = x + cos(angle) * (radius - spinningRadius);
+    float spinningY = y + sin(angle) * (radius - spinningRadius);
+    ellipse(spinningX, spinningY, spinningRadius * 2, spinningRadius * 2);
+  }
+}
+class LevelElement {
+  float x, y; // position
+  float width, height; // size
+  float initialX; // initial x position of the element
+
+  LevelElement(float x, float y, float width, float height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.initialX = x;
+  }
+
+  void update() {
+    // Element Moving
+    x -= 5;
+  }
+
+  void display() {
+    fill(0);
+    rect(x, y, width, height);
+  }
+
+  boolean intersects(Circle circle) {
+    float closestX = constrain(circle.x, x, x + width);
+    float closestY = constrain(circle.y, y, y + height);
+    float distanceX = circle.x - closestX;
+    float distanceY = circle.y - closestY;
+    float distanceSquared = distanceX * distanceX + distanceY * distanceY;
+    return distanceSquared <= circle.radius * circle.radius;
+  }
+
+  void reset() {
+    x = initialX;
+  }
+}
+class Resetter {
+  float x, y; // position
+  float diameter; // size
+  float initialX; // initial x position of the resetter
+  boolean collided; // whether the resetter has collided with the player or not
+
+  Resetter(float x, float y, float diameter) {
+    this.x = x;
+    this.y = y;
+    this.diameter = diameter;
+    this.initialX = x;
+    this.collided = false;
+  }
+
+  void update() {
+    // Resetter Moving
+    x -= 5;
+  }
+
+  void display() {
+    fill(0);
+    ellipse(x, y, diameter, diameter);
+  }
+
+  boolean intersects(Circle circle) {
+    float distance = dist(circle.x, circle.y, x, y);
+    if (distance <= circle.radius + diameter / 2) {
+      resetGame(); // Call resetGame() when there is a collision
+      return true;
+    }
+    return false;
+  }
+
+  void resetPosition() {
+    x = initialX;
+    collided = true;
+  }
+}
