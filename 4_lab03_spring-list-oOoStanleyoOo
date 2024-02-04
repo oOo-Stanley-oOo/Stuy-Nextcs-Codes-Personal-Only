@@ -1,0 +1,379 @@
+//Goal: To show spring force between orbs
+//***** TEMPLATE USED! THIS IS NOT ENTIRELY WRITTEN BY STANLEY
+
+/*===========================
+  When run, this program should use a linked list
+  of OrbNodes to simulate the physics of a bunch of
+  orbs connected by springs. The program responds to
+  the following keystrokes:
+
+    spacebar: toggle moving on/off
+    'b': toggle bounce on/off
+    'r': reset, creating a list of 10 orbs,
+         and setting moving and bounce to false.
+    'a': Add a random node to the front of the list
+    'd': Delete the first node in the list.
+
+  This program should not crash, even if the list
+  has no nodes it at some point.
+
+  You do not need to modify any of this code.
+  =========================*/
+
+
+
+/* Not used in this program, but these are constants
+  that have been useful for our physics engine and
+  therefore useful to keep around.
+*/
+float GRAVITY = 0.4;
+int MAX_SIZE  = 50;
+int MIN_SIZE = 10;
+float MAX_MASS = 10;
+float MIN_MASS = 1;
+float DAMPENING = 1;
+
+float SPRING_CONST = 0.005;
+int SPRING_LENGTH = 100;
+int NUM_ORBS = 10;
+
+boolean moving;
+boolean bounce;
+
+OrbList slinky;
+
+void setup() {
+  size(600, 600);
+  background(255);
+  reset();
+}//setup
+
+void draw() {
+
+  background(255);
+  displayMode();
+
+  slinky.display(SPRING_LENGTH);
+
+  if (moving) {
+    slinky.applySprings(SPRING_LENGTH, SPRING_CONST);
+    slinky.run(bounce, DAMPENING);
+  }//moving
+
+}//draw
+
+void reset() {
+  moving = false;
+  bounce = false;
+
+  slinky = new OrbList();
+  for (int i=0; i<NUM_ORBS; i++) {
+    OrbNode o = new OrbNode( int(random(15, width-15)), int(random(15, height-15)), 25, 5);
+    slinky.addFront(o);
+  }//make orbs
+}//reset
+
+
+void keyPressed() {
+  if (key == ' ') {
+    moving = !moving;
+  }
+  if (key == 'b') {
+    bounce = !bounce;
+  }
+  if (key == 'r') {
+    reset();
+  }
+  if (key == 'a') {
+    OrbNode o = new OrbNode( int(random(15, width-15)), int(random(15, height-15)), 25, 5);
+    slinky.addFront(o);
+  }
+  if (key == 'd') {
+    slinky.removeFront();
+  }
+}//keyPressed
+
+void displayMode() {
+  //initial setup
+  color c;
+  textAlign(LEFT, TOP);
+  textSize(15);
+  noStroke();
+  //red or green boxes
+  c = moving ? color(0, 255, 0) : color(255, 0, 0);
+  fill(c);
+  rect(0, 0, 53, 20);
+  c = bounce ? color(0, 255, 0) : color(255, 0, 0);
+  fill(c);
+  rect(54, 0, 57, 20);
+
+  stroke(0);
+  fill(0);
+  text("MOVING", 1, 0);
+  text("BOUNCE", 55, 0);
+}
+class Orb {
+
+  PVector position;
+  PVector velocity;
+  PVector acceleration;
+  int size;
+  float mass;
+  color c;
+
+  Orb(int x, int y, int s, float m) {
+    position = new PVector(x, y);
+    velocity = new PVector(0, 0);
+    acceleration = new PVector(0, 0);
+    size = s;
+    mass = m;
+    c = color(random(256), random(256), random(256));
+  }//constructor
+
+  void run(boolean bounce, float damp) {
+    velocity.add(acceleration);
+    velocity.mult(damp);
+    position.add(velocity);
+    acceleration.mult(0);
+
+    if (bounce) {
+      yBounce();
+      xBounce();
+    }
+  }//run
+
+  PVector getSpring(Orb o, int springLength, float springK) {
+    float d = position.dist(o.position);
+    //d = max(5, d);
+    float displacement = d - springLength;
+    float magnitude = displacement * springK;
+
+    PVector direction = PVector.sub(o.position, this.position);
+    direction.normalize();
+    direction.mult(magnitude);
+    return direction;
+  }//getSpring
+
+  PVector getGravity(Orb o, float G) {
+    if (o != this) {
+      float d = this.position.dist(o.position);
+      d = constrain(d, 5, 100);
+      float mag = (G * mass * o.mass) / (d * d);
+      PVector direction = PVector.sub(o.position, this.position);
+      direction.normalize();
+      direction.mult(mag);
+      return direction;
+    }
+    return new PVector(0, 0);
+  }//getGravity
+
+  float getDensity() {
+    return mass/size;
+  }//getDensity
+
+  void applyForce(PVector f) {
+    PVector newf = f.copy();
+    newf.div( mass );
+    acceleration.add(newf);
+  }//applyForce
+
+  void yBounce() {
+    if (position.y < size/2) {
+      position.y = size/2;
+      velocity.y *= -1;
+    }
+    else if (position.y >= (height-size/2)) {
+      position.y = height - size/2;
+      velocity.y *= -1;
+    }
+  }//yBounce
+
+  void xBounce() {
+    if (position.x < size/2) {
+      position.x = size/2;
+      velocity.x *= -1;
+    }
+    else if (position.x >= width - size/2) {
+      position.x = width - size/2;
+      velocity.x *= -1;
+    }
+  }//xBounce
+
+  boolean checkYBoundry() {
+    boolean check = position.y >= height - size/2;
+    check = check || (position.y <= size/2);
+    return check;
+  }
+  boolean checkXBoundry() {
+    boolean check = position.x >= width - size/2;
+    check = check || (position.x <= size/2);
+    return check;
+  }
+
+  void display() {
+    int t = int(map(getDensity(), MIN_MASS/MAX_SIZE, MAX_MASS/MIN_SIZE, 100, 255));
+    fill(c, t);
+    circle(position.x, position.y, size);
+  }//display
+
+}//OrbNode
+class OrbNode extends Orb {
+
+  OrbNode next;
+  OrbNode previous;
+
+  OrbNode(int x, int y, int s, float m) {
+    super(x, y, s, m);
+  }//constructor
+
+  void applySprings(int springLength, float springK) {
+    if (next != null) {
+      PVector s = this.getSpring(next, springLength, springK);
+      this.applyForce(s);
+    }//there's a next
+    if (previous != null) {
+      PVector s = this.getSpring(previous, springLength, springK);
+      this.applyForce(s);
+    }//there's a previous
+  }//applySprings
+
+  void display(int springLength) {
+    super.display();
+    if (next != null) {
+      float d = this.position.dist(next.position);
+      if (d > springLength) {
+        stroke(0, 255, 0);
+      }//extended spring
+      else if (d < springLength) {
+        stroke(255, 0, 0);
+      }//compressed spring
+      else {
+        stroke(0);
+      }//just right spring
+      line(this.position.x, this.position.y, next.position.x, next.position.y);
+    }//draw spring
+    stroke(0); //reset stroke at the end
+  }//display
+
+}//class OrbNode
+/*===========================
+  OrbList
+  Class to represent a Linked List of OrbNodes.
+  Instance Variables:
+    OrbNode front:
+      The first element of the list.
+      Initially, this will be null.
+  Methods to work on:
+    0. addFront
+    1. display
+    2. applySprings
+    3. run
+    4. removeFront
+  When working on these methods, make sure to
+  account for null values appropraitely. When the program
+  is run, no NullPointerExceptions should occur.
+  =========================*/
+
+class OrbList {
+
+  OrbNode front;
+
+  /*===========================
+    Contructor
+    Does very little.
+    You do not need to modify this method.
+    =========================*/
+  OrbList() {
+    front = null;
+  }//constructor
+
+  /*===========================
+    addFront(OrbNode o)
+    Insert o to the beginning of the list.
+    =========================*/
+  void addFront(OrbNode o) {
+  if (front == null) {
+    front = o;
+  } else {
+    OrbNode temp = front;
+    front = o;
+    o.next = temp;
+  }
+}//addFront
+
+
+  /*===========================
+    display(int springLength)
+    Display all the nodes in the list using
+    the display method defined in the OrbNode class.
+    =========================*/
+  void display(int springLength) {
+  OrbNode current = front; // start at the beginning of the list
+  while (current != null) { // loop until the end of the list is reached
+    println("Node value: " + current.previous + " Spring length: " + springLength);
+    current = current.next; // move to the next node
+  }
+}
+
+
+  /*===========================
+    applySprings(int springLength, float springK)
+    Use the applySprings method in OrbNode on each
+    element in the list.
+    =========================*/
+  void applySprings(int springLength, float springK) {
+  OrbNode current = this.front;
+  while (current.next != null) {
+    PVector displacement = current.next.position.copy().sub(current.position);
+    float distance = displacement.mag();
+    float forceMag = springK * (distance - springLength);
+    current.applyForce(displacement.copy().setMag(forceMag));
+    current.next.applyForce(displacement.copy().setMag(-forceMag));
+    current = current.next;
+  }
+}//applySprings
+
+  /*===========================
+    run(boolean bounce, float damp)
+    Call run on each node in the list.
+    =========================*/
+  void run(boolean bounce, float damp) {
+      OrbNode current = front;
+    while (current != null) {
+      current.run(bounce, damp);
+      current = current.next;
+    }
+  }//applySprings
+
+  /*===========================
+    removeFront()
+    Remove the element at the front of the list, i.e.
+    after this method is run, the former second element
+    should not be the first (and so on).
+    =========================*/
+  void removeFront() {
+    if (front != null) {
+      front = front.next;
+    }
+  }//removeFront
+
+
+}//OrbList
+class FixedOrb extends Orb {
+
+  FixedOrb(int x, int y, int s, float m) {
+    super(x, y, s, m);
+    c = color(0);
+  }//constructor
+
+  //fixed orbs do not move at all
+  void run(boolean bounce, float damp) {
+  }//run
+
+  //dont do the transparency/denisity calculation
+  void display() {
+    fill(c);
+    circle(position.x, position.y, size);
+  }//display
+
+}//FixedOrb
