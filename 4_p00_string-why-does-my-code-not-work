@@ -1,0 +1,223 @@
+//Goal: To recreate the game TypeRacer
+
+Button buttons;
+Letters letters;
+int startTime;
+int timeLeft = 60;
+int carX;
+
+void setup() {
+  size(600, 600);
+  buttons = new Button();
+  letters = new Letters();
+}
+
+void draw() {
+  background(255);
+  buttons.display();
+  letters.display();
+  // display the car
+  fill(255, 0, 0);
+  rect(carX, 200, 50, 30);
+  fill(0, 0, 255);
+  circle(carX + 10, 230, 10);
+  circle(carX + 40, 230, 10);
+
+  // move the car to the right if the space bar is pressed and the word is spelled correctly
+  if (keyPressed && key == ' ' && letters.isCorrect) {
+    carX += 1;
+  }
+
+  // keep the car within the screen
+  if (carX > width - 50) {
+    carX = width - 50;
+  }
+}
+
+
+void keyPressed() {
+  letters.checkKey(key);
+}
+
+void mouseClicked() {
+  buttons.checkButton();
+}
+class Button {
+
+  void display() {
+    //display start and reset buttons
+    startButton();
+    resetButton();
+    //display timer
+    timer(timeLeft);
+  }//display
+
+  void startButton() {
+    //a circle that starts the timer and allows key pressing
+    fill(#63F069);
+    circle(width-50, 50, 100);
+  }//startButton
+  
+  void resetButton() {
+    //resets timer to 60 seconds, resets words, and displays start screen
+    fill(#FF0000);
+    circle(width-150, 50, 100);
+  }//resetButton
+  void checkButton() {
+    // checks which button is clicked
+    if (dist(mouseX, mouseY, width-50, 50) < 50) {
+      loop();
+      letters.startTime = millis();
+    } else if (dist(mouseX, mouseY, width-150, 50) < 50) {
+      timeLeft = 60;
+      letters.resetGame();
+    }
+  }
+  void timer(int s) {
+  // displays the time in seconds on the top left corner. Timer starts when start button is pressed
+  fill(0);
+  rect(0,0, 200, 50);
+  fill(255);
+  textSize(32);
+  text("Time: " + s, 100, 20);
+  if (s == 0) {
+    noLoop();
+    letters.gameOver();
+  } else if (millis() - startTime >= 1000) {
+    timeLeft--;
+    startTime = millis();
+  }
+}//timer
+}
+class Letters {
+  String[] words = {"apple", "quixotic",
+                    "raconteur","tenebrous","ubiquitous","welter","xylophone","yammer",
+                    "zealot","abracadabra","balderdash","cacophony","doppelganger","ephemeral","farrago",
+                    "galumph", "peach", "quince",
+                    "raspberry", "strawberry", "tangerine", "fruit", "watermelon",
+                    "avocado", "pepper", "carrot", "dill", "eggplant",
+                    "fennel", "garlic", "honey", "lettuce", "jicama",
+                    "kale", "leek", "mushroom", "nutmeg", "okra",
+                    "parsnip", "quinoa", "radish", "spinach", "thyme",
+                    "noodles", "vanilla", "germ", "xigua", "squash",
+                    "zucchini","apple", "banana", "cherry", "dragonfruit", "elderberry",
+                    "fig", "grape", "honeydew", "kiwi", "lemon",
+                    "mango", "nectarine", "orange", "peach", "quince",
+                    "raspberry", "strawberry", "tangerine", "fruit", "watermelon",
+                    "avocado", "pepper", "carrot", "dill", "eggplant",
+                    "fennel", "garlic", "honey", "lettuce", "jicama",
+                    "kale", "leek", "mushroom", "nutmeg", "okra",
+                    "parsnip", "quinoa", "radish", "spinach", "thyme",
+                    "noodles", "vanilla", "germ", "xigua", "squash",
+                    "zucchini"};
+  int currentWordIndex = 0;
+  String currentWord = words[currentWordIndex];
+  String typedWord = "";
+  boolean isCorrect = false;
+  boolean isStarted = false;
+  int x = 100;
+  int y = 300;
+  int boxSize = 50;
+    float inch = boxSize;
+  int timeLeft = 60;
+  int startTime;
+
+  void resetGame() {
+    //start with first word
+    currentWord = words[0];
+    currentWordIndex = 0;
+    typedWord = "";
+    isCorrect = false;
+    isStarted = false;
+    timeLeft = 60;
+  }
+
+  void display() {
+  //display the word to be typed and the progress bar
+  textAlign(CENTER, CENTER);
+  textSize(32);
+  fill(0);
+  text(currentWord, width/2, y);
+  noFill();
+  stroke(0);
+  rect(x, y+50, width-2*x, boxSize, 5);
+  noStroke();
+
+  // Change color of box based on whether typed word is correct or not
+  if (isCorrect) {
+    fill(0, 255, 0);
+  } else {
+    fill(255, 0, 0);
+  }
+  float progress = map(typedWord.length(), 0, currentWord.length(), 0, width-2*x);
+  rect(x, y+50, progress, boxSize, 5);
+  noFill();
+  stroke(0);
+  rect(x, y+50, width-2*x, boxSize, 5);
+
+  // Reset the color to green for correct letters
+  fill(0, 255, 0);
+  for (int i = 0; i < typedWord.length(); i++) {
+    if (typedWord.charAt(i) == currentWord.charAt(i)) {
+      float letterWidth = textWidth(currentWord.charAt(i));
+      float xPos = x + map(i, 0, currentWord.length(), 0, width-2*x) + letterWidth/2;
+      float yPos = y + 50 + boxSize/2;
+      ellipse(xPos, yPos, inch, inch);
+    }
+  }
+}
+
+
+
+  void checkKey(char key) {
+    if (!isStarted) {
+      isStarted = true;
+    }
+    if (key == BACKSPACE) {
+      if (typedWord.length() > 0) {
+        typedWord = typedWord.substring(0, typedWord.length()-1);
+      }
+    } else if (key == ' ') {
+      checkWord();
+    } else if (key >= 'a' && key <= 'z') {
+      typedWord += key;
+    }
+  }
+
+  void checkWord() {
+    if (typedWord.length() > currentWord.length()) {
+  typedWord = typedWord.substring(0, currentWord.length());
+  }
+    if (typedWord.equals(currentWord)) {
+      currentWordIndex++;
+      if (currentWordIndex >= words.length) {
+        //player has won the game
+        noLoop();
+        fill(0);
+        textSize(64);
+        textAlign(CENTER, CENTER);
+        text("You win!", width/2, height/2);
+      } else {
+        currentWord = words[currentWordIndex];
+        typedWord = "";
+        isCorrect = true;
+      }
+    } else {
+      isCorrect = false;
+    }
+  }
+  
+  
+
+
+  void gameOver() {
+    //stop the game and display the "game over" message
+    noLoop();
+    fill(0);
+    textSize(64);
+    textAlign(CENTER, CENTER-150);
+    text("Game over", width/2, height/2);
+    textSize(32);
+    text(" wpm= " + currentWordIndex, width/2, height/2 + 150);
+  }
+}
